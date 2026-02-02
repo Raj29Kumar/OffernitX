@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy & Data Security FAQ | OffernitX</title>
+    <style>
+        /* CSS Variables based on your design */
+        :root {
+            --bg-color: #0a0e14;
+            --card-bg: #111821;
+            --accent-gold: #ffb400;
+            --text-main: #ffffff;
+            --text-muted: #a0aab8;
+            --border-color: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header Styling */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ffffff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            display: grid;
+            gap: 15px;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-gold);
+        }
+
+        /* Accordion Trigger */
+        .faq-question {
+            width: 100%;
+            padding: 20px 25px;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question::after {
+            content: '+';
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Active State */
+        .faq-item.active .faq-question::after {
+            content: '−';
+            transform: rotate(180deg);
+        }
+
+        /* Accordion Content */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .faq-content-inner {
+            padding: 0 25px 25px 25px;
+            color: var(--text-muted);
+        }
+
+        .faq-content-inner strong {
+            color: var(--accent-gold);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .faq-content-inner ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .faq-content-inner li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .faq-content-inner li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+        }
+
+        /* One-Line Summary Box */
+        .summary-box {
+            margin-top: 50px;
+            padding: 30px;
+            background: linear-gradient(145deg, #111821, #0a0e14);
+            border-left: 4px solid var(--accent-gold);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .summary-box h3 {
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .summary-box p {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* Footer button */
+        .cta-btn {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 12px 30px;
+            background-color: var(--accent-gold);
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Privacy & Data Security FAQ</h1>
+            <p>Your data security is our top priority. Here is how we handle it.</p>
+        </header>
+
+        <div class="faq-section">
+
+            <div class="faq-item">
+                <button class="faq-question">Does OffernitX read all our company emails?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        <strong>No.</strong>
+                        OffernitX only connects to the specific mailbox you choose and processes only quotation-related
+                        emails. It does not read internal conversations, HR emails, finance emails, or unrelated
+                        communication. You always control which mailbox is connected.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Are our emails sent to OffernitX servers?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        <strong>Not in self-hosted (on-premise) mode.</strong>
+                        When OffernitX is deployed on your own server:
+                        <ul>
+                            <li>Emails are read and processed inside your infrastructure</li>
+                            <li>Email content never leaves your network</li>
+                            <li>No email data is sent to OffernitX servers</li>
+                        </ul>
+                        This is the highest privacy option.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Can OffernitX access our customer emails or quotations?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        <strong>No.</strong>
+                        In self-hosted mode: We do not see your emails, quotations, PDFs, or access your database. We
+                        provide the software only; you operate it fully internally.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">What data does OffernitX store?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        <strong>Only what is required to create and track quotations.</strong>
+                        <ul>
+                            <li>Quotation-related emails & Generated PDFs</li>
+                            <li>Extracted products, quantities, prices, and VAT</li>
+                            <li>Date and time of quotation</li>
+                        </ul>
+                        We do NOT store full mailbox history, internal discussions, or credentials in plain text.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Are emails sent automatically to customers?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        <strong>No.</strong>
+                        OffernitX creates email drafts only. A human must always review and click Send. There is no
+                        automatic sending during trials or MVP usage.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Is our data used to train AI models?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        <strong>Absolutely not.</strong>
+                        We do not train AI on client data, reuse emails for analytics, or share data between customers.
+                        Each customer’s data is fully isolated.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Can we run OffernitX entirely on our own server?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        <strong>Yes.</strong>
+                        OffernitX supports self-hosted deployment where the app and database belong to you, and emails
+                        stay inside your network. This works offline and is ideal for strict compliance.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">How is licensing handled without accessing our data?</button>
+                <div class="faq-answer">
+                    <div class="faq-content-inner">
+                        Licensing is handled via a secure license key or file using server fingerprints. It does NOT
+                        read email content or customer data and works offline.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="summary-box">
+            <h3>One-Line Summary</h3>
+            <p>OffernitX can run fully inside your infrastructure. Your emails, prices, and quotations never leave your
+                servers.</p>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="./index.html" class="cta-btn">Back to Main Site</a>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const faqItem = button.parentElement;
+                const answer = button.nextElementSibling;
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    if (item !== faqItem) {
+                        item.classList.remove('active');
+                        item.querySelector('.faq-answer').style.maxHeight = null;
+                    }
+                });
+                faqItem.classList.toggle('active');
+                if (faqItem.classList.contains('active')) {
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                } else {
+                    answer.style.maxHeight = null;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

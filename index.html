@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>OffernitX — E-mail → PDF quote → Gmail draft (in ~60s)</title>
+  <meta
+    content="OffernitX turns inquiry emails into professional HTML + PDF quotes and saves them as Gmail drafts. Prices only from your ERP/MRP. Human-approved."
+    name="description" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      /* Dark, high-trust palette (psychology):
+         - Deep navy = stability + security
+         - Cool cyan = clarity + tech competence
+         - Warm amber = action + reward (CTA)
+      */
+      --bg: #070b14;
+      --bg2: #0a1020;
+      --panel: #0b1220;
+      --panel2: #0f1a2e;
+      --ink: #e6edf7;
+      --muted: #c3cfdf;
+      --muted2: #a8b8cf;
+      --hint: #86a0bf;
+      --border: rgba(148, 163, 184, .18);
+      --border2: rgba(148, 163, 184, .26);
+
+      --copper: #f59e0b;
+      /* warm amber */
+      --copper2: #fbbf24;
+      /* amber highlight */
+      --ice: #38bdf8;
+      /* cyan */
+
+      --radius: 18px;
+      --radius2: 24px;
+      --max: 1160px;
+
+      --shadow-1: 0 10px 24px rgba(0, 0, 0, .35);
+      --shadow-2: 0 18px 44px rgba(0, 0, 0, .50);
+
+      --focus: 0 0 0 4px rgba(56, 189, 248, .22);
+      --cta: linear-gradient(135deg, var(--copper), var(--copper2));
+
+      --space: 24px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      height: 100%;
+      background: var(--bg)
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1100px 700px at 15% 0%, rgba(56, 189, 248, .12), transparent 60%),
+        radial-gradient(900px 600px at 90% 10%, rgba(245, 158, 11, .10), transparent 55%),
+        radial-gradient(1200px 800px at 50% 115%, rgba(56, 189, 248, .07), transparent 55%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 var(--space)
+    }
+
+    /* Accessibility */
+    .skip {
+      position: absolute;
+      left: -999px;
+      top: 10px;
+      background: rgba(11, 18, 32, .95);
+      border: 1px solid var(--border2);
+      padding: 10px 14px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-1);
+      z-index: 1000;
+      color: var(--ink);
+    }
+
+    .skip:focus {
+      left: 12px;
+      outline: none;
+      box-shadow: var(--shadow-1), var(--focus)
+    }
+
+    /* Top notice */
+    .notice {
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 11, 20, .55);
+      backdrop-filter: saturate(1.2) blur(10px);
+    }
+
+    .notice .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px var(--space)
+    }
+
+    .notice p {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted2)
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .60);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .25);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--copper);
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, .18)
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(7, 11, 20, .70);
+      backdrop-filter: saturate(1.3) blur(14px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, .35);
+    }
+
+    .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px var(--space)
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 220px
+    }
+
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--cta);
+      box-shadow: 0 18px 44px rgba(245, 158, 11, .18), inset 0 0 0 1px rgba(255, 255, 255, .12);
+    }
+
+    .brand strong {
+      font-family: Sora;
+      font-size: 16px;
+      letter-spacing: .02em;
+      color: var(--ink)
+    }
+
+    .brand span {
+      display: block;
+      font-size: 12px;
+      color: var(--hint);
+      margin-top: 2px
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    nav a {
+      font-size: 14px;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 12px;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    nav a:hover {
+      background: rgba(148, 163, 184, .10);
+      color: var(--ink)
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .lang {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(11, 18, 32, .60);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .25);
+    }
+
+    .lang button {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .15s ease, color .15s ease, border .15s ease;
+    }
+
+    .lang button:hover {
+      background: rgba(148, 163, 184, .10);
+      color: var(--ink)
+    }
+
+    .lang button.active {
+      background: rgba(245, 158, 11, .16);
+      color: var(--ink);
+      border: 1px solid rgba(245, 158, 11, .28)
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .62);
+      color: var(--ink);
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 14px;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .28);
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 24px rgba(0, 0, 0, .35);
+      border-color: rgba(148, 163, 184, .34);
+      /* background: rgba(15, 26, 46, .70) */
+    }
+
+    .btn:focus {
+      outline: none;
+      box-shadow: var(--shadow-1), var(--focus)
+    }
+
+    .btnPrimary {
+      border: none;
+      background: var(--cta);
+      color: #2a1b0f;
+      box-shadow: 0 18px 44px rgba(245, 158, 11, .20);
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .btnPrimary:hover {
+      box-shadow: 0 22px 58px rgba(245, 158, 11, .26)
+    }
+
+    .btnGhost {
+      background: linear-gradient(180deg, rgba(15, 26, 46, .75), rgba(11, 18, 32, .55));
+      border: 1px solid var(--border2);
+      font-weight: 800;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 88px 0 56px
+    }
+
+    .heroGrid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 34px;
+      align-items: stretch
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .60);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .25);
+      width: fit-content;
+    }
+
+    .kicker .kDot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--ice);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, .16)
+    }
+
+    h1 {
+      font-family: Sora;
+      font-size: 54px;
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin: 14px 0 16px;
+      color: var(--ink);
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 70ch;
+      line-height: 1.74
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 22px;
+      flex-wrap: wrap
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px
+    }
+
+    .chip {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(11, 18, 32, .62);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .22);
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    .chip b {
+      color: var(--ink)
+    }
+
+    .proof {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-wrap: wrap;
+      /* align-items: center; */
+      color: var(--hint);
+      font-size: 12.5px;
+    }
+
+    .proof strong {
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: .02em
+    }
+
+    .proof .sep {
+      opacity: .6
+    }
+
+    .quote {
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(11, 18, 32, .72), rgba(15, 26, 46, .55));
+      border-radius: 18px;
+      padding: 14px 14px;
+      box-shadow: var(--shadow-1);
+      color: var(--muted);
+      position: relative;
+    }
+
+    /* .quote::before {
+      content: "“";
+      position: absolute;
+      left: 14px;
+      top: 6px;
+      font-family: Sora;
+      font-weight: 900;
+      font-size: 34px;
+      line-height: 1;
+      color: rgba(245, 158, 11, .28);
+    } */
+
+    .quote p {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      line-height: 1.65
+    }
+
+    .quote span {
+      display: block;
+      margin-top: 10px;
+      padding-left: 18px;
+      color: var(--hint);
+      font-size: 13px
+    }
+
+    .micro {
+      margin-top: 14px;
+      color: var(--muted2);
+      font-size: 13px;
+      line-height: 1.65
+    }
+
+    /* Trust strip + key metrics */
+    .logos {
+      margin-top: 18px
+    }
+
+    .logosLabel {
+      display: block;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--hint);
+      font-weight: 900
+    }
+
+    .logoRow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px
+    }
+
+    .logo {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .62);
+      color: var(--muted);
+      font-size: 13px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .22);
+      white-space: nowrap;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 10px;
+      margin-top: 14px
+    }
+
+    .stat {
+      grid-column: span 4;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(11, 18, 32, .72), rgba(15, 26, 46, .55));
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .26);
+      padding: 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .statNum {
+      font-family: Sora;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      font-size: 18px
+    }
+
+    .statTxt {
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.5
+    }
+
+    @media(max-width:980px) {
+      .stat {
+        grid-column: span 12
+      }
+    }
+
+    /* Bento preview */
+    .bento {
+      border-radius: var(--radius2);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(11, 18, 32, .62), rgba(15, 26, 46, .45));
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-2);
+      position: relative;
+      height: fit-content;
+    }
+
+    .bentoHead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .62);
+      font-size: 12px;
+      color: var(--muted);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .22);
+    }
+
+    .previewCard {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(7, 11, 20, .45);
+      overflow: hidden;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .26);
+    }
+
+    .previewTop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(11, 18, 32, .70), rgba(15, 26, 46, .55));
+    }
+
+    .previewTop strong {
+      font-size: 12.5px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted)
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, .12);
+      border: 1px solid rgba(56, 189, 248, .24);
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .previewBody {
+      padding: 14px
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(15, 26, 46, .45);
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    .row:last-child {
+      margin-bottom: 0
+    }
+
+    .k {
+      color: var(--muted2);
+      font-size: 12px
+    }
+
+    .v {
+      font-weight: 900;
+      color: var(--ink);
+      font-size: 13px
+    }
+
+    /* Sections */
+    section[id] {
+      scroll-margin-top: 96px
+    }
+
+    .section {
+      padding: 78px 0
+    }
+
+    .section>.wrap {
+      position: relative;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .55);
+      border-radius: var(--radius2);
+      padding: 34px;
+      box-shadow: var(--shadow-1);
+      overflow: hidden;
+    }
+
+    /* subtle top accent to visually separate blocks */
+    .section>.wrap::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, rgba(245, 158, 11, .92), rgba(56, 189, 248, .70));
+      opacity: .9;
+    }
+
+    .section>.wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(900px 320px at 15% 0%, rgba(56, 189, 248, .10), transparent 60%),
+        radial-gradient(820px 320px at 90% 10%, rgba(245, 158, 11, .10), transparent 55%);
+      opacity: .55;
+      mix-blend-mode: screen;
+    }
+
+    .section.alt>.wrap {
+      background: linear-gradient(180deg, rgba(11, 18, 32, .60), rgba(15, 26, 46, .45))
+    }
+
+    .section.alt>.wrap::before {
+      background: linear-gradient(90deg, rgba(56, 189, 248, .78), rgba(245, 158, 11, .62));
+    }
+
+    .h2 {
+      font-family: Sora;
+      font-size: 28px;
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    /* underline to improve section readability */
+    .h2::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 84px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(245, 158, 11, .92), rgba(56, 189, 248, .70));
+    }
+
+    .sub {
+      margin: 0 0 26px;
+      color: var(--muted);
+      max-width: 86ch;
+      line-height: 1.75
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px
+    }
+
+    .tile {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(7, 11, 20, .42);
+      padding: 22px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .22);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+      position: relative;
+    }
+
+    .tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      pointer-events: none;
+      opacity: .55;
+      background: radial-gradient(700px 180px at 10% 0%, rgba(56, 189, 248, .10), transparent 62%);
+    }
+
+    .tile:hover {
+      border-color: rgba(245, 158, 11, .28)
+    }
+
+    .tile:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, .30);
+      background: rgba(7, 11, 20, .50)
+    }
+
+    .tile h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: var(--ink)
+    }
+
+    .tile p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.75
+    }
+
+    .tile.big {
+      grid-column: span 7
+    }
+
+    .tile.mid {
+      grid-column: span 5
+    }
+
+    .tile.small {
+      grid-column: span 4
+    }
+
+    .tile.full {
+      grid-column: span 12
+    }
+
+    /* Icon block (pure SVG, no emoji) */
+    .iconLine {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px
+    }
+
+    .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(56, 189, 248, .10);
+      border: 1px solid rgba(56, 189, 248, .20);
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+
+    .icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--ink);
+      opacity: .9
+    }
+
+    /* Steps */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px
+    }
+
+    .step {
+      grid-column: span 6;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(7, 11, 20, .42);
+      padding: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .22);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step::before {
+      content: "";
+      position: absolute;
+      left: -40px;
+      top: -60px;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(56, 189, 248, .18), transparent 60%);
+      opacity: .65;
+    }
+
+    .step:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, .30);
+      background: rgba(7, 11, 20, .50);
+      border-color: rgba(245, 158, 11, .28)
+    }
+
+    .num {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, .18), rgba(56, 189, 248, .10));
+      border: 1px solid rgba(245, 158, 11, .26);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: var(--ink);
+      flex: 0 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step h4 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      color: var(--ink);
+      position: relative;
+      z-index: 1
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.75;
+      position: relative;
+      z-index: 1
+    }
+
+    /* Pillars */
+    .pillarsWrap {
+      margin-top: 18px
+    }
+
+    .pillarsTitle {
+      margin: 0 0 12px;
+      font-size: 16px;
+      color: var(--ink)
+    }
+
+    .pillarsGrid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px
+    }
+
+    .pillar {
+      grid-column: span 3;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(7, 11, 20, .46), rgba(15, 26, 46, .38));
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .22);
+    }
+
+    .pillarTop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px
+    }
+
+    .pTag {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--hint)
+    }
+
+    .pDot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, .70);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, .14)
+    }
+
+    .pillar h5 {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink)
+    }
+
+    .pillar p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.7
+    }
+
+    /* Comparison table */
+    table th:nth-child(4),
+    table td:nth-child(4) {
+      background: rgba(56, 189, 248, .06);
+    }
+
+    table td:nth-child(4),
+    table th:nth-child(4) {
+      border-left: 1px solid rgba(56, 189, 248, .18);
+    }
+
+    .tableWrap {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(7, 11, 20, .42);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .30);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th,
+    td {
+      padding: 14px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left
+    }
+
+    th {
+      background: linear-gradient(180deg, rgba(11, 18, 32, .72), rgba(15, 26, 46, .55));
+      color: var(--ink);
+      font-size: 13px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    td {
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    .best {
+      font-weight: 900;
+      color: var(--ink)
+    }
+
+    .badgeBest {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, .12);
+      border: 1px solid rgba(56, 189, 248, .22);
+      color: var(--ink);
+      font-weight: 900;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+
+    /* Pricing */
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      align-items: stretch
+    }
+
+    .plan {
+      grid-column: span 4;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: rgba(7, 11, 20, .44);
+      padding: 20px;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .30);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+
+      transition:
+        background 0.45s ease,
+        box-shadow 0.45s ease,
+        border-color 0.45s ease,
+        transform 0.35s ease;
+    }
+
+    /* .plan.featured {
+      border-color: rgba(245, 158, 11, .40);
+      box-shadow: 0 18px 48px rgba(245, 158, 11, .14);
+      background: linear-gradient(180deg, rgba(7, 11, 20, .52), rgba(15, 26, 46, .42));
+    } */
+
+    .plan:hover {
+      border-color: rgba(245, 158, 11, .40);
+      box-shadow: 0 18px 48px rgba(245, 158, 11, .14);
+      background: linear-gradient(180deg,
+          rgba(7, 11, 20, .52),
+          rgba(15, 26, 46, .42));
+      transform: translateY(-6px);
+    }
+
+
+    /* .plan.featured::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 22px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, .55), rgba(56, 189, 248, .24));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: .9;
+    } */
+
+    .planTop {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px
+    }
+
+    .plan h3 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--ink)
+    }
+
+    .price {
+      margin-top: 12px;
+      color: var(--ink);
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: -.02em
+    }
+
+    .plan p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.7
+    }
+
+    .plan ul {
+      margin: 14px 0 0 18px;
+      color: var(--muted);
+      line-height: 1.85
+    }
+
+    .plan .cta {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 16px
+    }
+
+    .miniTag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(15, 26, 46, .45);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900
+    }
+
+    .lifetime {
+      margin-top: 14px;
+      border: 1px solid rgba(56, 189, 248, .20);
+      background: rgba(56, 189, 248, .06);
+      border-radius: 18px;
+      padding: 14px;
+      color: var(--muted);
+    }
+
+    .lifetime strong {
+      color: var(--ink)
+    }
+
+    /* Demo */
+    .demoBox {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(11, 18, 32, .62), rgba(15, 26, 46, .45));
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .35);
+      padding: 18px;
+    }
+
+    .video {
+      aspect-ratio: 16/9;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(800px 300px at 50% 30%, rgba(56, 189, 248, .14), transparent 60%),
+        radial-gradient(700px 260px at 20% 80%, rgba(245, 158, 11, .12), transparent 60%),
+        linear-gradient(180deg, rgba(7, 11, 20, .70), rgba(15, 26, 46, .55));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .play {
+      width: 74px;
+      height: 74px;
+      border-radius: 999px;
+      background: var(--cta);
+      border: none;
+      box-shadow: 0 18px 48px rgba(245, 158, 11, .22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #2a1b0f;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .videoMeta {
+      margin-top: 12px;
+      color: var(--hint);
+      font-size: 13px;
+      line-height: 1.65
+    }
+
+    /* Start */
+    .startGrid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+      align-items: start
+    }
+
+    .form {
+      border: 1px solid var(--border);
+      background: rgba(7, 11, 20, .44);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .30);
+    }
+
+    .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 12px;
+      font-weight: 700
+    }
+
+    .field {
+      width: 100%;
+      margin-top: 8px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .65);
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .field::placeholder {
+      color: rgba(195, 207, 223, .70)
+    }
+
+    .field:focus {
+      outline: none;
+      border-color: rgba(56, 189, 248, .55);
+      box-shadow: var(--focus)
+    }
+
+    textarea.field {
+      min-height: 110px;
+      resize: vertical
+    }
+
+    .note {
+      margin-top: 12px;
+      color: var(--hint);
+      font-size: 13px;
+      line-height: 1.65
+    }
+
+    .promise {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(7, 11, 20, .48), rgba(15, 26, 46, .40));
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .30);
+    }
+
+    .promise strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink)
+    }
+
+    .promise ul {
+      margin: 12px 0 0 18px;
+      color: var(--muted);
+      line-height: 1.85
+    }
+
+    /* Footer */
+    footer {
+      padding: 72px 0;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(11, 18, 32, .55), rgba(7, 11, 20, .85));
+      color: var(--muted);
+    }
+
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: flex-start
+    }
+
+    .links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      color: var(--hint)
+    }
+
+    .links a {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(15, 26, 46, .40)
+    }
+
+    .links a:hover {
+      background: rgba(15, 26, 46, .55)
+    }
+
+    /* Responsive */
+    @media(max-width:980px) {
+      .head {
+        padding: 12px 16px
+      }
+
+      .notice .wrap {
+        padding: 10px 16px
+      }
+
+      nav {
+        display: none
+      }
+
+      .heroGrid {
+        grid-template-columns: 1fr
+      }
+
+      h1 {
+        font-size: 42px
+      }
+
+      .section {
+        padding: 64px 0
+      }
+
+      .section>.wrap {
+        padding: 22px
+      }
+
+      .step {
+        grid-column: span 12
+      }
+
+      .plan {
+        grid-column: span 12
+      }
+
+      .pillar {
+        grid-column: span 12
+      }
+
+      .startGrid {
+        grid-template-columns: 1fr
+      }
+
+      .wrap {
+        padding: 0 16px
+      }
+
+      .pill {
+        display: none
+      }
+    }
+
+    @media(max-width:760px) {
+      .tableWrap {
+        overflow: auto
+      }
+
+      table {
+        min-width: 720px
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto
+      }
+    }
+
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .pricing {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .plan {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        text-align: center;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip" data-i18n="a11y.skip" href="#top">Skip to content</a>
+  <div aria-label="Pilot notice" class="notice" role="note">
+    <div class="wrap">
+      <p data-i18n="notice">Private pilot • Built from real sales operations</p>
+      <div class="pill"><span class="dot"></span><span data-i18n="notice2">ERP-backed • Human-approved • Self-hosted
+          friendly</span></div>
+    </div>
+  </div>
+  <header>
+    <div class="wrap head">
+      <a aria-label="OffernitX home" class="brand" href="#top">
+        <div aria-hidden="true" class="mark"></div>
+        <div>
+          <strong>OffernitX</strong>
+          <span data-i18n="tagline">AI that turns emails into offers</span>
+        </div>
+      </a>
+      <nav aria-label="Primary">
+        <a data-i18n="nav.for" href="#for">For who</a>
+        <a data-i18n="nav.do" href="#do">What it does</a>
+        <a data-i18n="nav.compare" href="#compare">Comparison</a>
+        <a data-i18n="nav.pricing" href="#pricing">Pricing</a>
+        <a data-i18n="nav.faq" href="./faq.html">FAQ</a>
+      </nav>
+      <div class="right">
+        <div aria-label="Language" class="lang">
+          <button id="btn-en" onclick="setLang('en')" type="button">EN</button>
+          <button id="btn-sk" onclick="setLang('sk')" type="button">SK</button>
+          <button id="btn-cz" onclick="setLang('cz')" type="button">CZ</button>
+        </div>
+        <a class="btn btnPrimary" data-i18n="cta.primary" href="#start">Start 14‑day free trial</a>
+      </div>
+    </div>
+  </header>
+  <main class="hero" id="top" role="main">
+    <div class="wrap heroGrid">
+      <section aria-label="Hero">
+        <div class="kicker"><span aria-hidden="true" class="kDot"></span><span data-i18n="hero.kicker">Quoting
+            automation you can trust (human‑approved)</span></div>
+        <h1 data-i18n="hero.h1">From inquiry e‑mail to a ready‑to‑send quote draft — in about a minute.</h1>
+        <p class="lead" data-i18n="hero.lead">OffernitX reads incoming RFQs, extracts items, quantities and parameters,
+          verifies price &amp; availability exclusively from your ERP/MRP, generates a clean HTML + PDF quote — and
+          saves everything as a Gmail draft for your final approval.</p>
+        <div class="actions">
+          <a class="btn btnPrimary" data-i18n="cta.primary" href="#start">Start 14‑day free trial</a>
+          <a class="btn btnGhost" data-i18n="cta.secondary" href="#demo">Watch 90‑second demo</a>
+        </div>
+        <div aria-label="Highlights" class="chips">
+          <div class="chip"><b data-i18n="chips.c1b">AI works</b> <span data-i18n="chips.c1">Human approves</span></div>
+          <div class="chip"><b data-i18n="chips.c2b">No hallucinations</b> <span data-i18n="chips.c2">Prices only from
+              ERP/MRP</span></div>
+          <div class="chip"><b data-i18n="chips.c3b">Output</b> <span data-i18n="chips.c3">HTML + PDF + Gmail
+              draft</span></div>
+        </div>
+        <div aria-label="Proof" class="proof">
+          <div>
+            <strong data-i18n="proof.title">Built for Slovakia &amp; Czechia SME</strong>
+          </div>
+          <div>
+            <span class="sep">•</span>
+            <span data-i18n="proof.p1">Works with Gmail workflow</span>
+          </div>
+          <div>
+            <span class="sep">•</span>
+            <span data-i18n="proof.p2">Single source of truth</span>
+          </div>
+          <div>
+            <span class="sep">•</span>
+            <span data-i18n="proof.p3">Human-in-the-loop by default</span>
+          </div>
+        </div>
+        <div aria-label="Trust" class="logos">
+          <span class="logosLabel" data-i18n="hero.trust">Trusted by technical B2B teams (pilot cohort)</span>
+          <div aria-hidden="true" class="logoRow">
+            <div class="logo">Manufacturing</div>
+            <div class="logo">Automation</div>
+            <div class="logo">Distribution</div>
+            <div class="logo">Installations</div>
+          </div>
+        </div>
+        <div aria-label="Key metrics" class="stats">
+          <div class="stat">
+            <div class="statNum" data-i18n="hero.stat1n">~60s</div>
+            <div class="statTxt" data-i18n="hero.stat1t">to a ready draft (typical RFQ)</div>
+          </div>
+          <div class="stat">
+            <div class="statNum" data-i18n="hero.stat2n">ERP/MRP</div>
+            <div class="statTxt" data-i18n="hero.stat2t">single source of truth for prices &amp; items</div>
+          </div>
+          <div class="stat">
+            <div class="statNum" data-i18n="hero.stat3n">100%</div>
+            <div class="statTxt" data-i18n="hero.stat3t">human approval before sending</div>
+          </div>
+        </div>
+        <div aria-label="Testimonial" class="quote">
+          <p data-i18n="hero.quote">“Quotes used to slow us down. Now it’s a process that moves us forward.”</p>
+          <span data-i18n="hero.quoteBy">(placeholder)</span>
+        </div>
+        <p class="micro" data-i18n="hero.note">No autonomous sending. OffernitX only prepares a draft — you stay in
+          control.</p>
+      </section>
+      <aside aria-label="Quotation preview" class="bento">
+        <div class="bentoHead">
+          <div class="badge"><span class="dot"></span><span data-i18n="preview.badge">Quote preview</span></div>
+          <div class="badge" data-i18n="preview.badge2">ERP/MRP backed</div>
+        </div>
+        <div aria-label="Draft quote preview" class="previewCard" role="region" style="border-radius: 0px; padding: 0px; margin: 0px; border: 0px;">
+          <div class="previewTop">
+            <strong data-i18n="preview.title">Draft quote</strong>
+            <span class="tag" data-i18n="preview.tag">Saved as Gmail draft</span>
+          </div>
+          <!-- <div class="previewBody">
+            <div class="row">
+              <div class="k" data-i18n="preview.k1">Detected items</div>
+              <div class="v" data-i18n="preview.v1">2 products • 5 pcs</div>
+            </div>
+            <div class="row">
+              <div class="k" data-i18n="preview.k2">Prices &amp; VAT</div>
+              <div class="v" data-i18n="preview.v2">Loaded from ERP rules</div>
+            </div>
+            <div class="row">
+              <div class="k" data-i18n="preview.k3">Output</div>
+              <div class="v" data-i18n="preview.v3">HTML + PDF + draft</div>
+            </div>
+          </div> -->
+
+          <div style="overflow: hidden;">
+            <img src="./quotation-QT-202601-0422.png" alt="Quotation" style="width: 100%; height: 100%;"/>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <section class="section alt" id="for">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="for.h2">Who OffernitX is for</h2>
+      <p class="sub" data-i18n="for.sub">For Slovak &amp; Czech SMEs (up to ~50 people) where quotes happen daily —
+        fast, technical, under pressure.</p>
+      <div class="grid">
+        <div class="tile mid">
+          <h3 data-i18n="for.t1">Manufacturing &amp; engineering</h3>
+          <p data-i18n="for.p1">Machine building, production, spare parts, technical distribution.</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="for.t2">Electrical &amp; automation</h3>
+          <p data-i18n="for.p2">Installations, energy, automation, industrial components.</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="for.t3">Construction &amp; B2B services</h3>
+          <p data-i18n="for.p3">Assembly teams, B2B contractors, projects with frequent RFQs.</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="for.t4">If you still quote in Excel/Word</h3>
+          <p data-i18n="for.p4">OffernitX gives you time back and eliminates avoidable errors.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="pain">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="pain.h2">Why quoting hurts (and costs money)</h2>
+      <p class="sub" data-i18n="pain.sub">Most “automation” fails because it breaks trust. OffernitX is built around
+        safety and control.</p>
+      <div class="grid">
+        <div class="tile small">
+          <div class="iconLine">
+            <div aria-hidden="true" class="icon">
+              <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v6l3 2"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 data-i18n="pain.t1">Time</h3>
+              <p data-i18n="pain.p1">Copying items, rewriting parameters, formatting documents.</p>
+            </div>
+          </div>
+        </div>
+        <div class="tile small">
+          <div class="iconLine">
+            <div aria-hidden="true" class="icon">
+              <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+                <path d="M12 9v4"></path>
+                <path d="M12 17h.01"></path>
+                <path d="M10.3 3.6 2.4 19.2A2 2 0 0 0 4.2 22h15.6a2 2 0 0 0 1.8-2.8L13.7 3.6a2 2 0 0 0-3.4 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 data-i18n="pain.t2">Errors</h3>
+              <p data-i18n="pain.p2">Wrong prices, wrong quantities, wrong VAT, outdated price lists.</p>
+            </div>
+          </div>
+        </div>
+        <div class="tile small">
+          <div class="iconLine">
+            <div aria-hidden="true" class="icon">
+              <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+                <path d="M4 7h16"></path>
+                <path d="M4 12h16"></path>
+                <path d="M4 17h16"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 data-i18n="pain.t3">Chaos</h3>
+              <p data-i18n="pain.p3">Email, Excel, Word, PDF, ERP — no single truth.</p>
+            </div>
+          </div>
+        </div>
+        <div class="tile small">
+          <div class="iconLine">
+            <div aria-hidden="true" class="icon">
+              <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+                <rect height="11" rx="2" width="18" x="3" y="11"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 data-i18n="pain.t4">AI trust gap</h3>
+              <p data-i18n="pain.p4">Fear that AI will “invent” prices or send something without approval.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section alt" id="do">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="do.h2">What OffernitX does for you</h2>
+      <p class="sub" data-i18n="do.sub">A simple, practical pipeline: Gmail → quote → draft. No drama.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <div>
+            <h4 data-i18n="do.s1t">Recognize the inquiry</h4>
+            <p data-i18n="do.s1p">Detects that an email is an RFQ and extracts relevant context.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <div>
+            <h4 data-i18n="do.s2t">Extract items</h4>
+            <p data-i18n="do.s2p">Products, codes, quantities, parameters — even when written “human”.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <div>
+            <h4 data-i18n="do.s3t">Verify in ERP/MRP</h4>
+            <p data-i18n="do.s3p"><b>Doesn’t invent.</b> Uses only your ERP/MRP as the single source of truth.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <div>
+            <h4 data-i18n="do.s4t">Generate a professional quote</h4>
+            <p data-i18n="do.s4p">Clean layout, your logo/brand, totals, VAT, optional service/installation lines.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">5</div>
+          <div>
+            <h4 data-i18n="do.s5t">Prepare Gmail draft</h4>
+            <p data-i18n="do.s5p">PDF attached + ready email. You review and send. Always.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">6</div>
+          <div>
+            <h4 data-i18n="do.s6t">Flag uncertainty</h4>
+            <p data-i18n="do.s6p">If something is unclear, OffernitX marks it for review instead of guessing.</p>
+          </div>
+        </div>
+      </div>
+      <div class="pillarsWrap">
+        <h3 class="pillarsTitle" data-i18n="pillars.h2">4 pillars that make OffernitX safe in real life</h3>
+        <div aria-label="Pillars" class="pillarsGrid">
+          <div class="pillar">
+            <div class="pillarTop"><span class="pTag">Pillar</span><span aria-hidden="true" class="pDot"></span></div>
+            <h5 data-i18n="pillars.t1">Simplicity</h5>
+            <p data-i18n="pillars.p1">Fits your existing flow: Gmail → quote → send.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillarTop"><span class="pTag">Pillar</span><span aria-hidden="true" class="pDot"
+                style="background:rgba(245,158,11,.70);box-shadow:0 0 0 4px rgba(245,158,11,.14)"></span></div>
+            <h5 data-i18n="pillars.t2">Reliability</h5>
+            <p data-i18n="pillars.p2">Prices/products only from ERP/MRP. No hallucinations.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillarTop"><span class="pTag">Pillar</span><span aria-hidden="true" class="pDot"
+                style="background:rgba(226,237,247,.55);box-shadow:0 0 0 4px rgba(226,237,247,.10)"></span></div>
+            <h5 data-i18n="pillars.t3">Control</h5>
+            <p data-i18n="pillars.p3">Never auto-sends. Human approval is required.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillarTop"><span class="pTag">Pillar</span><span aria-hidden="true" class="pDot"
+                style="background:rgba(56,189,248,.75);box-shadow:0 0 0 4px rgba(56,189,248,.14)"></span></div>
+            <h5 data-i18n="pillars.t4">Speed</h5>
+            <p data-i18n="pillars.p4">Target: quote ready within ~60 seconds for typical inquiries.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section alt" id="compare">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="compare.h2">A comparison your owner &amp; sales team will understand</h2>
+      <p class="sub" data-i18n="compare.sub">OffernitX is SME-friendly: practical setup, measurable impact, no corporate
+        CPQ complexity.</p>
+      <div aria-label="Comparison table" class="tableWrap" role="region">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="compare.th1">Criteria</th>
+              <th data-i18n="compare.th2">Manual (Excel/Word)</th>
+              <th data-i18n="compare.th3">Classic CPQ</th>
+              <th data-i18n="compare.th4">OffernitX <span class="badgeBest" data-i18n="compare.best">Best for SME</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-i18n="compare.r1c1">Time per quote</td>
+              <td data-i18n="compare.r1c2">Slow</td>
+              <td data-i18n="compare.r1c3">Fast</td>
+              <td class="best" data-i18n="compare.r1c4">Extremely fast</td>
+            </tr>
+            <tr>
+              <td data-i18n="compare.r2c1">Price errors</td>
+              <td data-i18n="compare.r2c2">High risk</td>
+              <td data-i18n="compare.r2c3">Low</td>
+              <td class="best" data-i18n="compare.r2c4">Minimal</td>
+            </tr>
+            <tr>
+              <td data-i18n="compare.r3c1">Setup</td>
+              <td data-i18n="compare.r3c2">“Always somehow”</td>
+              <td data-i18n="compare.r3c3">Heavy</td>
+              <td class="best" data-i18n="compare.r3c4">Practical &amp; quick</td>
+            </tr>
+            <tr>
+              <td data-i18n="compare.r4c1">Price &amp; complexity</td>
+              <td data-i18n="compare.r4c2">Low / chaos</td>
+              <td data-i18n="compare.r4c3">High / corporate</td>
+              <td class="best" data-i18n="compare.r4c4">SME-friendly</td>
+            </tr>
+            <tr>
+              <td data-i18n="compare.r5c1">Human control</td>
+              <td data-i18n="compare.r5c2">Yes</td>
+              <td data-i18n="compare.r5c3">Varies</td>
+              <td class="best" data-i18n="compare.r5c4">Always</td>
+            </tr>
+            <tr>
+              <td data-i18n="compare.r6c1">Single source of truth</td>
+              <td data-i18n="compare.r6c2">Scattered</td>
+              <td data-i18n="compare.r6c3">System</td>
+              <td class="best" data-i18n="compare.r6c4">Your ERP/MRP</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  <section class="section alt" id="pricing">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="pricing.h2">Pricing (transparent)</h2>
+      <p class="sub" data-i18n="pricing.sub">Clear options for SMEs. Prices shown are typical list prices (excl. VAT).
+      </p>
+      <div class="pricing">
+        <div class="plan">
+          <div class="planTop">
+            <div>
+              <h3 data-i18n="pricing.s1">Starter</h3>
+              <div class="miniTag" data-i18n="pricing.s1tag">1–2 users</div>
+            </div>
+          </div>
+          <div class="price" data-i18n="pricing.s1price">€49 / month • €490 / year</div>
+          <p data-i18n="pricing.s1desc">Quotes from emails, PDF output, Gmail drafts, basic templates.</p>
+          <ul>
+            <li data-i18n="pricing.s1b1">Email → items extraction</li>
+            <li data-i18n="pricing.s1b2">PDF + HTML template</li>
+            <li data-i18n="pricing.s1b3">Gmail drafts workflow</li>
+          </ul>
+          <div class="cta">
+            <a class="btn btnPrimary" data-i18n="cta.primary" href="#start">Start 14‑day free trial</a>
+            <a class="btn btnGhost" data-i18n="cta.secondary" href="#demo">Watch 90‑second demo</a>
+          </div>
+        </div>
+        <div class="plan featured">
+          <div class="planTop">
+            <div>
+              <h3 data-i18n="pricing.s2">Team</h3>
+              <div class="miniTag" data-i18n="pricing.s2tag">Most popular</div>
+            </div>
+          </div>
+          <div class="price" data-i18n="pricing.s2price">€99 / month • €990 / year</div>
+          <p data-i18n="pricing.s2desc">Team templates, branding, rules, and consistency across multiple users.</p>
+          <ul>
+            <li data-i18n="pricing.s2b1">Multiple templates / brands</li>
+            <li data-i18n="pricing.s2b2">Rules for VAT / totals</li>
+            <li data-i18n="pricing.s2b3">Approval workflow</li>
+          </ul>
+          <div class="cta">
+            <a class="btn btnPrimary" data-i18n="cta.primary" href="#start">Start 14‑day free trial</a>
+            <a class="btn btnGhost" data-i18n="pricing.ask" href="#start">Ask for a quote</a>
+          </div>
+        </div>
+        <div class="plan">
+          <div class="planTop">
+            <div>
+              <h3 data-i18n="pricing.s3">Pro</h3>
+              <div class="miniTag" data-i18n="pricing.s3tag">Integrations</div>
+            </div>
+          </div>
+          <div class="price" data-i18n="pricing.s3price">Custom (enterprise)</div>
+          <p data-i18n="pricing.s3desc">API integrations, audit log, advanced workflow and permissions.</p>
+          <ul>
+            <li data-i18n="pricing.s3b1">ERP/MRP API integration</li>
+            <li data-i18n="pricing.s3b2">Audit log &amp; roles</li>
+            <li data-i18n="pricing.s3b3">Custom workflow / SLA</li>
+          </ul>
+          <div class="cta">
+            <a class="btn btnPrimary" data-i18n="pricing.contact" href="#start">Contact for setup</a>
+            <a class="btn btnGhost" data-i18n="cta.secondary" href="#demo">Watch 90‑second demo</a>
+          </div>
+        </div>
+      </div>
+      <div aria-label="Lifetime pricing" class="lifetime">
+        <strong data-i18n="pricing.lifeTitle">Lifetime license (one‑time)</strong>
+        <div data-i18n="pricing.life" style="margin-top:6px">Starter: <b>€2,500</b> • Team: <b>€4,900</b> • Pro:
+          <b>custom</b>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="faq.h2">Frequently asked questions</h2>
+      <p class="sub" data-i18n="faq.sub">Short, direct answers — so people can decide fast.</p>
+      <div class="grid">
+        <div class="tile mid">
+          <h3 data-i18n="faq.q1">Does OffernitX send emails automatically?</h3>
+          <p data-i18n="faq.a1">No. It always creates a Gmail draft. You review and send.</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="faq.q2">Can OffernitX invent a price or product?</h3>
+          <p data-i18n="faq.a2">No. It uses only ERP/MRP (single source of truth).</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="faq.q3">How fast can we deploy it?</h3>
+          <p data-i18n="faq.a3">Usually in days — depending on how clean your price data is.</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="faq.q4">What if the inquiry is unclear?</h3>
+          <p data-i18n="faq.a4">It flags unclear items for review or asks for clarification — it doesn’t guess.</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="faq.q5">Is it built for Slovakia &amp; Czechia?</h3>
+          <p data-i18n="faq.a5">Yes — language, workflows and support are designed locally.</p>
+        </div>
+        <div class="tile mid">
+          <h3 data-i18n="faq.q6">Can it run on-prem / locally?</h3>
+          <p data-i18n="faq.a6">Yes — deployment can be self-hosted, on-prem, or a local Linux app.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section alt" id="demo">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="demo.h2">90-second demo</h2>
+      <p class="sub" data-i18n="demo.sub">Replace this placeholder with your real video. The layout is production-ready.
+      </p>
+      <div class="demoBox">
+        <div aria-label="Demo video placeholder" class="video">
+          <button class="play" onclick="alert('Replace this placeholder with your video embed.');"
+            type="button">▶</button>
+        </div>
+        <div class="videoMeta" data-i18n="demo.meta">Tip: use a simple screen recording: email → extracted items → ERP
+          validation → PDF → Gmail draft.</div>
+      </div>
+      <div class="actions" style="margin-top:18px">
+        <a class="btn btnPrimary" data-i18n="cta.primary" href="#start">Start 14‑day free trial</a>
+        <a class="btn btnGhost" data-i18n="demo.alt" href="#start">Request a demo on my emails</a>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="start">
+    <div class="wrap">
+      <h2 class="h2" data-i18n="start.h2">Start without risk</h2>
+      <p class="sub" data-i18n="start.sub">14-day trial with full functionality. Real quotes, real workflow. No
+        pressure.</p>
+      <div class="startGrid">
+        <form aria-label="Trial request" class="form" onsubmit="event.preventDefault();">
+          <label class="label">
+            <span data-i18n="start.f1">Company name</span>
+            <input class="field" placeholder="Company name" required="" />
+          </label>
+          <label class="label">
+            <span data-i18n="start.f2">Work email</span>
+            <input class="field" placeholder="Work email" required="" type="email" />
+          </label>
+          <label class="label">
+            <span data-i18n="start.f3">What do you sell?</span>
+            <textarea class="field" placeholder="What do you sell and how many inquiries per week?"
+              required=""></textarea>
+          </label>
+          <button class="btn btnPrimary" data-i18n="cta.primary" style="margin-top:16px;width:100%">Start 14‑day free
+            trial</button>
+          <div class="note" data-i18n="start.note">We’ll respond with next steps. You keep full control of sending.
+          </div>
+        </form>
+        <aside aria-label="Trial includes" class="promise">
+          <strong data-i18n="start.sideTitle">What you get during trial</strong>
+          <div class="k" data-i18n="start.sideText">Real onboarding with measurable impact — not a generic demo.</div>
+          <ul>
+            <li data-i18n="start.li1">Connect to your pricing source (ERP/MRP or controlled import)</li>
+            <li data-i18n="start.li2">Branded PDF + HTML template</li>
+            <li data-i18n="start.li3">Gmail drafts workflow + approval</li>
+            <li data-i18n="start.li4">Success metrics &amp; iteration</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="wrap foot">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div aria-hidden="true" class="mark" style="width:28px;height:28px;border-radius:10px"></div>
+          <strong style="font-family:Sora;color:var(--ink)">OffernitX</strong>
+        </div>
+        <div data-i18n="footer.line1" style="margin-top:10px">AI quoting for technical B2B teams</div>
+        <div style="margin-top:6px">© 2025</div>
+        <div aria-label="Footer links" class="links">
+          <a data-i18n="footer.l1" href="#">Contact</a>
+          <a data-i18n="footer.l2" href="#">GDPR</a>
+          <a data-i18n="footer.l3" href="#">Terms</a>
+          <a data-i18n="footer.l4" href="#">Status</a>
+          <a data-i18n="footer.l5" href="#">Docs</a>
+          <a data-i18n="footer.l6" href="#">Partners</a>
+        </div>
+      </div>
+      <div>
+        <div data-i18n="footer.line2">ERP-backed • Human-approved • Self-hosted friendly</div>
+        <div data-i18n="footer.line3" style="margin-top:6px">Built for Slovakia, Czechia, and EU teams</div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    const i18n = {
+      en: {
+        a11y: { skip: "Skip to content" },
+        notice: "Private pilot • Built from real sales operations",
+        notice2: "ERP-backed • Human-approved • Self-hosted friendly",
+        tagline: "AI that turns emails into offers",
+        nav: { for: "For who", do: "What it does", compare: "Comparison", pricing: "Pricing", faq: "FAQ" },
+        cta: { primary: "Start 14‑day free trial", secondary: "Watch 90‑second demo" },
+        hero: {
+          kicker: "Quoting automation you can trust (human‑approved)",
+          h1: "From inquiry e‑mail to a ready‑to‑send quote draft — in about a minute.",
+          lead: "OffernitX reads incoming RFQs, extracts items, quantities and parameters, verifies price & availability exclusively from your ERP/MRP, generates a clean HTML + PDF quote — and saves everything as a Gmail draft for your final approval.",
+          trust: "Trusted by technical B2B teams (pilot cohort)",
+          stat1n: "~60s", stat1t: "to a ready draft (typical RFQ)",
+          stat2n: "ERP/MRP", stat2t: "single source of truth for prices & items",
+          stat3n: "100%", stat3t: "human approval before sending",
+          quote: "“We reduced quoting time without risking wrong prices — because ERP stays the source of truth.”",
+          quoteBy: "",
+          note: "No autonomous sending. OffernitX only prepares a draft — you stay in control."
+        },
+        chips: {
+          c1b: "AI works", c1: "Human approves",
+          c2b: "No hallucinations", c2: "Prices only from ERP/MRP",
+          c3b: "Output", c3: "HTML + PDF + Gmail draft"
+        },
+        proof: {
+          title: "Built for Slovakia & Czechia SME",
+          p1: "Works with Gmail workflow",
+          p2: "Single source of truth",
+          p3: "Human-in-the-loop by default"
+        },
+        preview: {
+          badge: "Quote preview",
+          badge2: "ERP/MRP backed",
+          title: "Draft quote",
+          tag: "Saved as Gmail draft",
+          k1: "Detected items", v1: "2 products • 5 pcs",
+          k2: "Prices & VAT", v2: "Loaded from ERP rules",
+          k3: "Output", v3: "HTML + PDF + draft"
+        },
+        for: {
+          h2: "Who OffernitX is for",
+          sub: "For Slovak & Czech SMEs (up to ~50 people) where quotes happen daily — fast, technical, under pressure.",
+          t1: "Manufacturing & engineering", p1: "Machine building, production, spare parts, technical distribution.",
+          t2: "Electrical & automation", p2: "Installations, energy, automation, industrial components.",
+          t3: "Construction & B2B services", p3: "Assembly teams, B2B contractors, projects with frequent RFQs.",
+          t4: "If you still quote in Excel/Word", p4: "OffernitX gives you time back and eliminates avoidable errors."
+        },
+        pain: {
+          h2: "Why quoting hurts (and costs money)",
+          sub: "Most “automation” fails because it breaks trust. OffernitX is built around safety and control.",
+          t1: "Time", p1: "Copying items, rewriting parameters, formatting documents.",
+          t2: "Errors", p2: "Wrong prices, wrong quantities, wrong VAT, outdated price lists.",
+          t3: "Chaos", p3: "Email, Excel, Word, PDF, ERP — no single truth.",
+          t4: "AI trust gap", p4: "Fear that AI will “invent” prices or send something without approval."
+        },
+        do: {
+          h2: "What OffernitX does for you",
+          sub: "A simple, practical pipeline: Gmail → quote → draft. No drama.",
+          s1t: "Recognize the inquiry", s1p: "Detects that an email is an RFQ and extracts relevant context.",
+          s2t: "Extract items", s2p: "Products, codes, quantities, parameters — even when written “human”.",
+          s3t: "Verify in ERP/MRP", s3p: "Doesn’t invent. Uses only your ERP/MRP as the single source of truth.",
+          s4t: "Generate a professional quote", s4p: "Clean layout, your logo/brand, totals, VAT, optional service/installation lines.",
+          s5t: "Prepare Gmail draft", s5p: "PDF attached + ready email. You review and send. Always.",
+          s6t: "Flag uncertainty", s6p: "If something is unclear, OffernitX marks it for review instead of guessing."
+        },
+        pillars: {
+          h2: "4 pillars that make OffernitX safe in real life",
+          t1: "Simplicity", p1: "Fits your existing flow: Gmail → quote → send.",
+          t2: "Reliability", p2: "Prices/products only from ERP/MRP. No hallucinations.",
+          t3: "Control", p3: "Never auto-sends. Human approval is required.",
+          t4: "Speed", p4: "Target: quote ready within ~60 seconds for typical inquiries."
+        },
+        compare: {
+          h2: "A comparison your owner & sales team will understand",
+          sub: "OffernitX is SME-friendly: practical setup, measurable impact, no corporate CPQ complexity.",
+          best: "Best for SME",
+          th1: "Criteria", th2: "Manual (Excel/Word)", th3: "Classic CPQ", th4: "OffernitX",
+          r1c1: "Time per quote", r1c2: "Slow", r1c3: "Fast", r1c4: "Extremely fast",
+          r2c1: "Price errors", r2c2: "High risk", r2c3: "Low", r2c4: "Minimal",
+          r3c1: "Setup", r3c2: "“Always somehow”", r3c3: "Heavy", r3c4: "Practical & quick",
+          r4c1: "Price & complexity", r4c2: "Low / chaos", r4c3: "High / corporate", r4c4: "SME-friendly",
+          r5c1: "Human control", r5c2: "Yes", r5c3: "Varies", r5c4: "Always",
+          r6c1: "Single source of truth", r6c2: "Scattered", r6c3: "System", r6c4: "Your ERP/MRP"
+        },
+        pricing: {
+          h2: "Pricing (transparent)",
+          sub: "Clear options for SMEs. Prices shown are typical list prices (excl. VAT).",
+          s1: "Starter", s1tag: "1–2 users", s1price: "€79 / month • €790 / year", s1desc: "Quotes from emails, PDF output, Gmail drafts, basic templates.",
+          s1b1: "Email → items extraction", s1b2: "PDF + HTML template", s1b3: "Gmail drafts workflow",
+          s2: "Team", s2tag: "Most popular", s2price: "€149 / month • €1,490 / year", s2desc: "Team templates, branding, rules, and consistency across multiple users.",
+          s2b1: "Multiple templates / brands", s2b2: "Rules for VAT / totals", s2b3: "Approval workflow",
+          s3: "Pro", s3tag: "Integrations", s3price: "Custom (enterprise)", s3desc: "API integrations, audit log, advanced workflow and permissions.",
+          s3b1: "ERP/MRP API integration", s3b2: "Audit log & roles", s3b3: "Custom workflow / SLA",
+          lifeTitle: "Lifetime license (one‑time)",
+          life: "Starter: €2,500 • Team: €4,900 • Pro: custom",
+          ask: "Ask for a quote",
+          contact: "Contact for setup"
+        },
+        faq: {
+          h2: "Frequently asked questions",
+          sub: "Short, direct answers — so people can decide fast.",
+          q1: "Does OffernitX send emails automatically?", a1: "No. It always creates a Gmail draft. You review and send.",
+          q2: "Can OffernitX invent a price or product?", a2: "No. It uses only ERP/MRP (single source of truth).",
+          q3: "How fast can we deploy it?", a3: "Usually in days — depending on how clean your price data is.",
+          q4: "What if the inquiry is unclear?", a4: "It flags unclear items for review or asks for clarification — it doesn’t guess.",
+          q5: "Is it built for Slovakia & Czechia?", a5: "Yes — language, workflows and support are designed locally.",
+          q6: "Can it run on-prem / locally?", a6: "Yes — deployment can be self-hosted, on-prem, or a local Linux app."
+        },
+        demo: {
+          h2: "90-second demo",
+          sub: "Replace this placeholder with your real video. The layout is production-ready.",
+          meta: "Tip: use a simple screen recording: email → extracted items → ERP validation → PDF → Gmail draft.",
+          alt: "Request a demo on my emails"
+        },
+        start: {
+          h2: "Start without risk",
+          sub: "14-day trial with full functionality. Real quotes, real workflow. No pressure.",
+          f1: "Company name", f2: "Work email", f3: "What do you sell?",
+          note: "We’ll respond with next steps. You keep full control of sending.",
+          sideTitle: "What you get during trial",
+          sideText: "Real onboarding with measurable impact — not a generic demo.",
+          li1: "Connect to your pricing source (ERP/MRP or controlled import)",
+          li2: "Branded PDF + HTML template",
+          li3: "Gmail drafts workflow + approval",
+          li4: "Success metrics & iteration"
+        },
+        footer: {
+          line1: "AI quoting for technical B2B teams",
+          line2: "ERP-backed • Human-approved • Self-hosted friendly",
+          line3: "Built for Slovakia, Czechia, and EU teams",
+          l1: "Contact", l2: "GDPR", l3: "Terms", l4: "Status", l5: "Docs", l6: "Partners"
+        }
+      },
+
+      sk: {
+        a11y: { skip: "Preskočiť na obsah" },
+        notice: "Privátny pilot • Vytvorené z reálnej praxe obchodu",
+        notice2: "Z ERP/MRP • S ľudským schválením • Self-hosted friendly",
+        tagline: "AI, ktorá mení e-maily na ponuky",
+        nav: { for: "Pre koho", do: "Čo robí", compare: "Porovnanie", pricing: "Cenník", faq: "FAQ" },
+        cta: { primary: "Spustiť 14‑dňový bezplatný trial", secondary: "Pozrieť 90‑sekundové demo" },
+        hero: {
+          kicker: "Automatizácia ponúk, ktorej môžete veriť (s ľudským schválením)",
+          h1: "Z dopytového e‑mailu na pripravený koncept ponuky — približne za minútu.",
+          lead: "OffernitX prečíta dopyt, vyťaží položky, množstvá a parametre, overí cenu a dostupnosť výhradne z vášho ERP/MRP, vygeneruje čistú ponuku v HTML + PDF — a všetko uloží ako koncept v Gmaile na vaše finálne schválenie.",
+          trust: "Dôvera technických B2B tímov (pilotná kohorta)",
+          stat1n: "~60 s", stat1t: "k hotovému draftu (bežný dopyt)",
+          stat2n: "ERP/MRP", stat2t: "jediný zdroj pravdy pre ceny a položky",
+          stat3n: "100 %", stat3t: "ľudské schválenie pred odoslaním",
+          quote: "„Zrýchlili sme ponuky bez rizika zlých cien — lebo ERP ostáva jedinou pravdou.“",
+          quoteBy: "(placeholder)",
+          note: "Žiadne autonómne odosielanie. OffernitX len pripraví koncept — vy máte kontrolu."
+        },
+        chips: {
+          c1b: "AI pracuje", c1: "Človek schvaľuje",
+          c2b: "Bez halucinácií", c2: "Ceny len z ERP/MRP",
+          c3b: "Výstup", c3: "HTML + PDF + Gmail draft"
+        },
+        proof: {
+          title: "Postavené pre SK/CZ SME",
+          p1: "Workflow cez Gmail",
+          p2: "Jedna pravda v dátach",
+          p3: "Človek v procese"
+        },
+        preview: {
+          badge: "Ukážka ponuky",
+          badge2: "Z ERP/MRP",
+          title: "Návrh ponuky",
+          tag: "Uložené ako koncept",
+          k1: "Zistené položky", v1: "2 produkty • 5 ks",
+          k2: "Ceny a DPH", v2: "Podľa ERP pravidiel",
+          k3: "Výstup", v3: "HTML + PDF + draft"
+        },
+        for: {
+          h2: "Pre koho je OffernitX",
+          sub: "Pre slovenské a české SME (do ~50 ľudí), kde ponuky vznikajú denne — rýchlo, technicky, pod tlakom.",
+          t1: "Strojárstvo a výroba", p1: "Strojárstvo, výroba, náhradné diely, technická distribúcia.",
+          t2: "Elektro a automatizácia", p2: "Elektroinštalácie, energetika, automatizácia, priemyselné komponenty.",
+          t3: "Stavebné a B2B služby", p3: "Montážne tímy, B2B dodávatelia, projekty s častými dopytmi.",
+          t4: "Ak robíte ponuky v Exceli/Worde", p4: "OffernitX vám vráti čas aj presnosť."
+        },
+        pain: {
+          h2: "Prečo ponuky bolia (a prečo to stojí peniaze)",
+          sub: "Väčšina “automatizácie” padá na nedôvere. OffernitX je postavený na bezpečnosti a kontrole.",
+          t1: "Čas", p1: "Kopírovanie položiek, prepisovanie parametrov, formátovanie.",
+          t2: "Chyby", p2: "Zlé ceny, zlé množstvá, zlá DPH, starý cenník.",
+          t3: "Chaos", p3: "E‑mail, Excel, Word, PDF, ERP — nič nie je jedna pravda.",
+          t4: "Nedôvera v AI", p4: "Obava, že si AI “domyslí” ceny alebo niečo odošle bez kontroly."
+        },
+        do: {
+          h2: "Čo OffernitX spraví za vás",
+          sub: "Jednoduchý praktický proces: Gmail → ponuka → koncept. Bez chaosu.",
+          s1t: "Rozpozná dopyt", s1p: "Zistí, že e‑mail je cenový dopyt, a vytiahne kontext.",
+          s2t: "Vyťaží položky", s2p: "Produkty, kódy, množstvá, parametre — aj keď sú napísané ľudsky.",
+          s3t: "Overí v ERP/MRP", s3p: "Nevymýšľa. Použije iba ERP/MRP ako jedinú pravdu.",
+          s4t: "Vygeneruje profesionálnu ponuku", s4p: "Čistý layout, logo/brand, sumáre, DPH, voliteľne servis/inštalácia.",
+          s5t: "Pripraví Gmail draft", s5p: "PDF priložené + e‑mail nachystaný. Vy len skontrolujete a odošlete.",
+          s6t: "Označí nejasnosti", s6p: "Keď niečo nie je jasné, označí to na kontrolu — nehádže odhady."
+        },
+        pillars: {
+          h2: "4 piliere, ktoré robia OffernitX bezpečný",
+          t1: "Jednoduchosť", p1: "Funguje v procese, ktorý už používate: Gmail → ponuka → odoslanie.",
+          t2: "Spoľahlivosť", p2: "Ceny a produkty iba z ERP/MRP. OffernitX nehalucinuje.",
+          t3: "Kontrola", p3: "Nikdy neodosiela automaticky. Človek má posledné slovo.",
+          t4: "Rýchlosť", p4: "Cieľ: ponuka do ~60 sekúnd pri bežnom dopyte."
+        },
+        compare: {
+          h2: "Porovnanie, ktoré pochopí majiteľ aj obchodník",
+          sub: "OffernitX je SME‑friendly: praktické nastavenie, merateľný dopad, bez korporátnej CPQ zložitosti.",
+          best: "Najlepšie pre SME",
+          th1: "Kritérium", th2: "Ručne (Excel/Word)", th3: "Klasické CPQ", th4: "OffernitX",
+          r1c1: "Čas na ponuku", r1c2: "Pomalé", r1c3: "Rýchle", r1c4: "Extrémne rýchle",
+          r2c1: "Chyby v cenách", r2c2: "Vysoké", r2c3: "Nízke", r2c4: "Minimálne",
+          r3c1: "Nastavenie", r3c2: "‘vždy nejako’", r3c3: "Náročné", r3c4: "Praktické a rýchle",
+          r4c1: "Cena / komplexita", r4c2: "Nízka / chaos", r4c3: "Vysoká / korporát", r4c4: "SME‑friendly",
+          r5c1: "Kontrola človeka", r5c2: "Áno", r5c3: "Rôzne", r5c4: "Áno, vždy",
+          r6c1: "Zdroj pravdy", r6c2: "Rozhádzané", r6c3: "Systém", r6c4: "Vaše ERP/MRP"
+        },
+        pricing: {
+          h2: "Cenník (transparentne)",
+          sub: "Jasné možnosti pre SME. Uvedené ceny sú typické cenníkové ceny (bez DPH).",
+          s1: "Starter", s1tag: "1–2 používatelia", s1price: "49 € / mesiac • 490 € / rok", s1desc: "Ponuky z e‑mailov, PDF výstup, Gmail drafty, základné šablóny.",
+          s1b1: "E‑mail → vyťaženie položiek", s1b2: "PDF + HTML šablóna", s1b3: "Workflow cez koncepty",
+          s2: "Team", s2tag: "Najpopulárnejší", s2price: "99 € / mesiac • 990 € / rok", s2desc: "Tímové šablóny, brand, pravidlá a konzistentnosť pri viacerých ľuďoch.",
+          s2b1: "Viac šablón / brandov", s2b2: "Pravidlá pre DPH / sumáre", s2b3: "Schvaľovací workflow",
+          s3: "Pro", s3tag: "Integrácie", s3price: "Na mieru (enterprise)", s3desc: "API integrácie, audit log, pokročilé workflow a práva.",
+          s3b1: "ERP/MRP API integrácia", s3b2: "Audit log & role", s3b3: "Custom workflow / SLA",
+          lifeTitle: "Doživotná licencia (jednorazovo)",
+          life: "Starter: 2 500 € • Team: 4 900 € • Pro: na mieru",
+          ask: "Chcem cenovú ponuku",
+          contact: "Kontaktovať pre nasadenie"
+        },
+        faq: {
+          h2: "Najčastejšie otázky",
+          sub: "Krátke a jasné odpovede — aby sa dalo rýchlo rozhodnúť.",
+          q1: "Posiela OffernitX e‑maily automaticky?", a1: "Nie. Vždy vytvorí Gmail koncept. Vy ho schválite a odošlete.",
+          q2: "Môže si OffernitX vymyslieť cenu alebo produkt?", a2: "Nie. Ceny a produkty berie len z ERP/MRP (single source of truth).",
+          q3: "Ako rýchlo sa dá nasadiť?", a3: "Typicky v dňoch — podľa pripravenosti vašich dát.",
+          q4: "Čo ak je dopyt nejasný?", a4: "Označí nejasné položky na kontrolu alebo vyžiada doplnenie — nehádže odhady.",
+          q5: "Je to pre Slovensko a Česko?", a5: "Áno — jazyk, B2B realita aj podpora sú navrhnuté lokálne.",
+          q6: "Dá sa to spustiť lokálne / on‑prem?", a6: "Áno — self-hosted, on‑prem, alebo lokálna Linux aplikácia."
+        },
+        demo: {
+          h2: "90‑sekundové demo",
+          sub: "Nahraďte placeholder reálnym videom. Layout je pripravený na produkciu.",
+          meta: "Tip: krátky záznam: e‑mail → položky → overenie v ERP → PDF → Gmail draft.",
+          alt: "Chcem ukážku na mojich e‑mailoch"
+        },
+        start: {
+          h2: "Začnite bez rizika",
+          sub: "14‑dňový trial – plná funkčnosť, reálne ponuky, reálny workflow. Bez nátlaku.",
+          f1: "Názov firmy", f2: "Pracovný e‑mail", f3: "Čo predávate?",
+          note: "Odpovieme s ďalšími krokmi. Odoslanie je vždy vo vašich rukách.",
+          sideTitle: "Čo získate počas trialu",
+          sideText: "Zameraný onboarding s merateľným dopadom — nie generické demo.",
+          li1: "Napojenie na zdroj cien (ERP/MRP alebo kontrolovaný import)",
+          li2: "Brandovaná PDF + HTML šablóna",
+          li3: "Workflow cez Gmail koncepty + schvaľovanie",
+          li4: "Metriky úspechu a iterácie"
+        },
+        footer: {
+          line1: "AI pre cenové ponuky v technickom B2B",
+          line2: "Z ERP/MRP • S ľudským schválením • Self-hosted friendly",
+          line3: "Pre Slovensko, Česko a EU tímy",
+          l1: "Kontakt", l2: "GDPR", l3: "Podmienky", l4: "Status", l5: "Dokumentácia", l6: "Partneri"
+        }
+      },
+
+      cz: {
+        a11y: { skip: "Přeskočit na obsah" },
+        notice: "Privátní pilot • Vzniklo z reálné obchodní praxe",
+        notice2: "Z ERP/MRP • S lidským schválením • Self-hosted friendly",
+        tagline: "AI, která mění e-maily na nabídky",
+        nav: { for: "Pro koho", do: "Co dělá", compare: "Porovnání", pricing: "Ceník", faq: "FAQ" },
+        cta: { primary: "Spustit 14denní bezplatný trial", secondary: "Podívat se na 90s demo" },
+        hero: {
+          kicker: "Automatizace nabídek, které můžete věřit (s lidským schválením)",
+          h1: "Z poptávkového e‑mailu na připravený koncept nabídky — zhruba za minutu.",
+          lead: "OffernitX přečte poptávku, vytěží položky, množství a parametry, ověří cenu a dostupnost výhradně z vašeho ERP/MRP, vygeneruje čistou nabídku v HTML + PDF — a vše uloží jako koncept v Gmailu k vašemu finálnímu schválení.",
+          trust: "Důvěra technických B2B týmů (pilotní kohorta)",
+          stat1n: "~60 s", stat1t: "k hotovému draftu (běžná poptávka)",
+          stat2n: "ERP/MRP", stat2t: "jediný zdroj pravdy pro ceny a položky",
+          stat3n: "100 %", stat3t: "lidské schválení před odesláním",
+          quote: "„Zrychlili jsme nabídky bez rizika špatných cen — protože ERP zůstává zdrojem pravdy.“",
+          quoteBy: "(placeholder)",
+          note: "Žádné autonomní odesílání. OffernitX jen připraví koncept — vy máte kontrolu."
+        },
+        chips: {
+          c1b: "AI pracuje", c1: "Člověk schvaluje",
+          c2b: "Bez halucinací", c2: "Ceny jen z ERP/MRP",
+          c3b: "Výstup", c3: "HTML + PDF + Gmail draft"
+        },
+        proof: {
+          title: "Postaveno pro SK/CZ SME",
+          p1: "Workflow přes Gmail",
+          p2: "Jedna pravda v datech",
+          p3: "Člověk v procesu"
+        },
+        preview: {
+          badge: "Ukázka nabídky",
+          badge2: "Z ERP/MRP",
+          title: "Návrh nabídky",
+          tag: "Uloženo jako koncept",
+          k1: "Zjištěné položky", v1: "2 produkty • 5 ks",
+          k2: "Ceny a DPH", v2: "Podle ERP pravidel",
+          k3: "Výstup", v3: "HTML + PDF + draft"
+        },
+        for: {
+          h2: "Pro koho je OffernitX",
+          sub: "Pro slovenské a české SME (do ~50 lidí), kde nabídky vznikají denně — rychle, technicky, pod tlakem.",
+          t1: "Strojírenství a výroba", p1: "Strojírenství, výroba, náhradní díly, technická distribuce.",
+          t2: "Elektro a automatizace", p2: "Instalace, energetika, automatizace, průmyslové komponenty.",
+          t3: "Stavební a B2B služby", p3: "Montážní týmy, B2B dodavatelé, projekty s častými poptávkami.",
+          t4: "Pokud děláte nabídky v Excelu/Wordu", p4: "OffernitX vám vrátí čas i přesnost."
+        },
+        pain: {
+          h2: "Proč nabídky bolí (a stojí peníze)",
+          sub: "Většina “automatizace” padá na nedůvěře. OffernitX je postavený na bezpečnosti a kontrole.",
+          t1: "Čas", p1: "Kopírování položek, přepis parametrů, formátování.",
+          t2: "Chyby", p2: "Špatné ceny, špatná množství, špatná DPH, starý ceník.",
+          t3: "Chaos", p3: "E‑mail, Excel, Word, PDF, ERP — nic není jedna pravda.",
+          t4: "Nedůvěra v AI", p4: "Obava, že si AI “domyslí” ceny nebo něco odešle bez kontroly."
+        },
+        do: {
+          h2: "Co OffernitX udělá za vás",
+          sub: "Jednoduchý praktický proces: Gmail → nabídka → koncept. Bez chaosu.",
+          s1t: "Rozpozná poptávku", s1p: "Zjistí, že e‑mail je poptávka, a vytáhne kontext.",
+          s2t: "Vytěží položky", s2p: "Produkty, kódy, množství, parametry — i když jsou napsané lidsky.",
+          s3t: "Ověří v ERP/MRP", s3p: "Nevymýšlí. Použije pouze ERP/MRP jako jedinou pravdu.",
+          s4t: "Vygeneruje profesionální nabídku", s4p: "Čistý layout, logo/brand, součty, DPH, volitelně servis/instalace.",
+          s5t: "Připraví Gmail draft", s5p: "PDF přiložené + e‑mail připravený. Vy jen zkontrolujete a odešlete.",
+          s6t: "Označí nejasnosti", s6p: "Když něco není jasné, označí to ke kontrole — nehádá."
+        },
+        pillars: {
+          h2: "4 pilíře, které dělají OffernitX bezpečný",
+          t1: "Jednoduchost", p1: "Funguje v procesu, který už používáte: Gmail → nabídka → odeslání.",
+          t2: "Spolehlivost", p2: "Ceny a produkty jen z ERP/MRP. OffernitX nehalucinuje.",
+          t3: "Kontrola", p3: "Nikdy neodesílá automaticky. Člověk má poslední slovo.",
+          t4: "Rychlost", p4: "Cíl: nabídka do ~60 sekund u běžné poptávky."
+        },
+        compare: {
+          h2: "Porovnání, kterému rozumí majitel i obchodník",
+          sub: "OffernitX je SME‑friendly: praktické nastavení, měřitelný dopad, bez korporátní CPQ složitosti.",
+          best: "Nejlepší pro SME",
+          th1: "Kritérium", th2: "Ručně (Excel/Word)", th3: "Klasické CPQ", th4: "OffernitX",
+          r1c1: "Čas na nabídku", r1c2: "Pomalé", r1c3: "Rychlé", r1c4: "Extrémně rychlé",
+          r2c1: "Chyby v cenách", r2c2: "Vysoké", r2c3: "Nízké", r2c4: "Minimální",
+          r3c1: "Nastavení", r3c2: "‘vždy nějak’", r3c3: "Náročné", r3c4: "Praktické a rychlé",
+          r4c1: "Cena / komplexita", r4c2: "Nízká / chaos", r4c3: "Vysoká / korporát", r4c4: "SME‑friendly",
+          r5c1: "Kontrola člověka", r5c2: "Ano", r5c3: "Různě", r5c4: "Ano, vždy",
+          r6c1: "Zdroj pravdy", r6c2: "Roztříštěné", r6c3: "Systém", r6c4: "Vaše ERP/MRP"
+        },
+        pricing: {
+          h2: "Ceník (transparentně)",
+          sub: "Jasné možnosti pro SME. Uvedené ceny jsou typické ceníkové ceny (bez DPH).",
+          s1: "Starter", s1tag: "1–2 uživatelé", s1price: "49 € / měsíc • 490 € / rok", s1desc: "Nabídky z e‑mailů, PDF výstup, Gmail drafty, základní šablony.",
+          s1b1: "E‑mail → vytěžení položek", s1b2: "PDF + HTML šablona", s1b3: "Workflow přes koncepty",
+          s2: "Team", s2tag: "Nejoblíbenější", s2price: "99 € / měsíc • 990 € / rok", s2desc: "Týmové šablony, brand, pravidla a konzistence při více lidech.",
+          s2b1: "Více šablon / brandů", s2b2: "Pravidla pro DPH / součty", s2b3: "Schvalovací workflow",
+          s3: "Pro", s3tag: "Integrace", s3price: "Na míru (enterprise)", s3desc: "API integrace, audit log, pokročilé workflow a práva.",
+          s3b1: "ERP/MRP API integrace", s3b2: "Audit log & role", s3b3: "Custom workflow / SLA",
+          lifeTitle: "Doživotní licence (jednorázově)",
+          life: "Starter: 2 500 € • Team: 4 900 € • Pro: na míru",
+          ask: "Chci cenovou nabídku",
+          contact: "Kontakt pro nasazení"
+        },
+        faq: {
+          h2: "Nejčastější otázky",
+          sub: "Krátké a jasné odpovědi — aby se dalo rychle rozhodnout.",
+          q1: "Posílá OffernitX e‑maily automaticky?", a1: "Ne. Vždy vytvoří Gmail koncept. Vy ho schválíte a odešlete.",
+          q2: "Může si OffernitX vymyslet cenu nebo produkt?", a2: "Ne. Bere jen z ERP/MRP (single source of truth).",
+          q3: "Jak rychle se dá nasadit?", a3: "Typicky ve dnech — podle připravenosti vašich dat.",
+          q4: "Co když je poptávka nejasný?", a4: "Označí nejasné položky ke kontrole nebo si vyžádá doplnění — nehádá.",
+          q5: "Je to pro Slovensko a Česko?", a5: "Ano — jazyk, B2B realita i podpora jsou navržené lokálně.",
+          q6: "Dá se to spustit lokálně / on‑prem?", a6: "Ano — self-hosted, on‑prem nebo lokální Linux aplikace."
+        },
+        demo: {
+          h2: "90s demo",
+          sub: "Nahraďte placeholder reálným videem. Layout je připravený na produkci.",
+          meta: "Tip: krátký záznam: e‑mail → položky → ověření v ERP → PDF → Gmail draft.",
+          alt: "Chci ukázku na mých e‑mailech"
+        },
+        start: {
+          h2: "Začněte bez rizika",
+          sub: "14denní trial – plná funkčnost, reálné nabídky, reálný workflow. Bez nátlaku.",
+          f1: "Název firmy", f2: "Pracovní e‑mail", f3: "Co prodáváte?",
+          note: "Odpovíme s dalšími kroky. Odeslání je vždy ve vašich rukou.",
+          sideTitle: "Co získáte během trialu",
+          sideText: "Zaměřený onboarding s měřitelným dopadem — ne generické demo.",
+          li1: "Napojení na zdroj cen (ERP/MRP nebo kontrolovaný import)",
+          li2: "Brandovaná PDF + HTML šablona",
+          li3: "Workflow přes Gmail koncepty + schválení",
+          li4: "Metriky úspěchu a iterace"
+        },
+        footer: {
+          line1: "AI pro cenové nabídky v technickém B2B",
+          line2: "Z ERP/MRP • S lidským schválením • Self-hosted friendly",
+          line3: "Pro Slovensko, Česko a EU týmy",
+          l1: "Kontakt", l2: "GDPR", l3: "Podmínky", l4: "Status", l5: "Dokumentace", l6: "Partneři"
+        }
+      }
+    };
+
+    function getDeep(obj, path) {
+      return path.split('.').reduce((acc, k) => (acc && acc[k] !== undefined) ? acc[k] : null, obj);
+    }
+
+    function applyLang(lang) {
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const v = getDeep(i18n[lang], key);
+        if (v === null || v === undefined) return;
+        // allow simple inline markup for a few strings (e.g. pricing line with <b>)
+        if (typeof v === 'string' && v.includes('<')) el.innerHTML = v;
+        else el.textContent = v;
+      });
+      ['en', 'sk', 'cz'].forEach(code => {
+        const b = document.getElementById('btn-' + code);
+        if (!b) return;
+        b.classList.toggle('active', code === lang);
+      });
+      try { localStorage.setItem('offernitx_lang', lang); } catch (e) { }
+    }
+
+    function setLang(lang) { applyLang(lang); }
+
+    (function () {
+      let lang = 'en';
+      try {
+        const saved = localStorage.getItem('offernitx_lang');
+        if (saved && i18n[saved]) lang = saved;
+        else {
+          const nav = (navigator.language || 'en').toLowerCase();
+          if (nav.startsWith('sk')) lang = 'sk';
+          else if (nav.startsWith('cs')) lang = 'cz';
+        }
+      } catch (e) { }
+      applyLang(lang);
+    })();
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (!id || id === "#") return;
+        const el = document.querySelector(id);
+        if (!el) return;
+        e.preventDefault();
+        el.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+
+</html>
