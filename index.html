@@ -1381,182 +1381,179 @@
     }
   </style>
 
+  <style>
+    /* CSS Variables based on your design */
+    :root {
+      --bg-color: #0a0e14;
+      --card-bg: #111821;
+      --accent-gold: #ffb400;
+      --text-main: #ffffff;
+      --text-muted: #a0aab8;
+      --border-color: #1f2937;
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
 
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
 
-<style>
-        /* CSS Variables based on your design */
-        :root {
-            --bg-color: #0a0e14;
-            --card-bg: #111821;
-            --accent-gold: #ffb400;
-            --text-main: #ffffff;
-            --text-muted: #a0aab8;
-            --border-color: #1f2937;
-        }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+    /* Header Styling */
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            padding: 40px 20px;
-        }
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(to right, #ffffff, var(--accent-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
 
-        /* Header Styling */
-        header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
+    /* FAQ Section */
+    .faq-section {
+      display: grid;
+      gap: 15px;
+    }
 
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #ffffff, var(--accent-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    .faq-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
 
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
+    .faq-item:hover {
+      border-color: var(--accent-gold);
+    }
 
-        /* FAQ Section */
-        .faq-section {
-            display: grid;
-            gap: 15px;
-        }
+    /* Accordion Trigger */
+    .faq-question {
+      width: 100%;
+      padding: 20px 25px;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      text-align: left;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .faq-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+    .faq-question::after {
+      content: '+';
+      color: var(--accent-gold);
+      font-size: 1.5rem;
+      transition: transform 0.3s ease;
+    }
 
-        .faq-item:hover {
-            border-color: var(--accent-gold);
-        }
+    /* Active State */
+    .faq-item.active .faq-question::after {
+      content: '−';
+      transform: rotate(180deg);
+    }
 
-        /* Accordion Trigger */
-        .faq-question {
-            width: 100%;
-            padding: 20px 25px;
-            background: none;
-            border: none;
-            color: var(--text-main);
-            text-align: left;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* Accordion Content */
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      background: rgba(255, 255, 255, 0.02);
+    }
 
-        .faq-question::after {
-            content: '+';
-            color: var(--accent-gold);
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-        }
+    .faq-content-inner {
+      padding: 0 25px 25px 25px;
+      color: var(--text-muted);
+    }
 
-        /* Active State */
-        .faq-item.active .faq-question::after {
-            content: '−';
-            transform: rotate(180deg);
-        }
+    .faq-content-inner strong {
+      color: var(--accent-gold);
+      display: block;
+      margin-bottom: 8px;
+    }
 
-        /* Accordion Content */
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background: rgba(255, 255, 255, 0.02);
-        }
+    .faq-content-inner ul {
+      list-style: none;
+      margin-top: 10px;
+    }
 
-        .faq-content-inner {
-            padding: 0 25px 25px 25px;
-            color: var(--text-muted);
-        }
+    .faq-content-inner li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
 
-        .faq-content-inner strong {
-            color: var(--accent-gold);
-            display: block;
-            margin-bottom: 8px;
-        }
+    .faq-content-inner li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent-gold);
+    }
 
-        .faq-content-inner ul {
-            list-style: none;
-            margin-top: 10px;
-        }
+    /* One-Line Summary Box */
+    .summary-box {
+      margin-top: 50px;
+      padding: 30px;
+      background: linear-gradient(145deg, #111821, #0a0e14);
+      border-left: 4px solid var(--accent-gold);
+      border-radius: 4px;
+      text-align: center;
+    }
 
-        .faq-content-inner li {
-            position: relative;
-            padding-left: 20px;
-            margin-bottom: 8px;
-        }
+    .summary-box h3 {
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
 
-        .faq-content-inner li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--accent-gold);
-        }
+    .summary-box p {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
 
-        /* One-Line Summary Box */
-        .summary-box {
-            margin-top: 50px;
-            padding: 30px;
-            background: linear-gradient(145deg, #111821, #0a0e14);
-            border-left: 4px solid var(--accent-gold);
-            border-radius: 4px;
-            text-align: center;
-        }
+    /* Footer button */
+    .cta-btn {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 12px 30px;
+      background-color: var(--accent-gold);
+      color: #000;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 5px;
+      transition: transform 0.2s;
+    }
 
-        .summary-box h3 {
-            color: var(--accent-gold);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-
-        .summary-box p {
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-
-        /* Footer button */
-        .cta-btn {
-            display: inline-block;
-            margin-top: 40px;
-            padding: 12px 30px;
-            background-color: var(--accent-gold);
-            color: #000;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: transform 0.2s;
-        }
-
-        .cta-btn:hover {
-            transform: scale(1.05);
-        }
-    </style>
+    .cta-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 
 <body>
@@ -1666,7 +1663,8 @@
           <div class="badge"><span class="dot"></span><span data-i18n="preview.badge">Quote preview</span></div>
           <div class="badge" data-i18n="preview.badge2">ERP/MRP backed</div>
         </div>
-        <div aria-label="Draft quote preview" class="previewCard" role="region" style="border-radius: 0px; padding: 0px; margin: 0px; border: 0px;">
+        <div aria-label="Draft quote preview" class="previewCard" role="region"
+          style="border-radius: 0px; padding: 0px; margin: 0px; border: 0px;">
           <div class="previewTop">
             <strong data-i18n="preview.title">Draft quote</strong>
             <span class="tag" data-i18n="preview.tag">Saved as Gmail draft</span>
@@ -1687,7 +1685,7 @@
           </div> -->
 
           <div style="overflow: hidden;">
-            <img src="./quotation-QT-202601-0422.png" alt="Quotation" style="width: 100%; height: 100%;"/>
+            <img src="./quotation-QT-202601-0422.png" alt="Quotation" style="width: 100%; height: 100%;" />
           </div>
         </div>
       </aside>
@@ -1997,107 +1995,107 @@
     <div class="wrap">
       <h2 class="h2" data-i18n="faq.h2">Frequently asked questions</h2>
       <p class="sub" data-i18n="faq.sub">Short, direct answers — so people can decide fast.</p>
-       <div class="faq-section">
+      <div class="faq-section">
 
-            <div class="faq-item">
-                <button class="faq-question">Does OffernitX read all our company emails?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        <strong>No.</strong>
-                        OffernitX only connects to the specific mailbox you choose and processes only quotation-related
-                        emails. It does not read internal conversations, HR emails, finance emails, or unrelated
-                        communication. You always control which mailbox is connected.
-                    </div>
-                </div>
+        <div class="faq-item">
+          <button class="faq-question">Does OffernitX read all our company emails?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              <strong>No.</strong>
+              OffernitX only connects to the specific mailbox you choose and processes only quotation-related
+              emails. It does not read internal conversations, HR emails, finance emails, or unrelated
+              communication. You always control which mailbox is connected.
             </div>
-
-            <div class="faq-item">
-                <button class="faq-question">Are our emails sent to OffernitX servers?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        <strong>Not in self-hosted (on-premise) mode.</strong>
-                        When OffernitX is deployed on your own server:
-                        <ul>
-                            <li>Emails are read and processed inside your infrastructure</li>
-                            <li>Email content never leaves your network</li>
-                            <li>No email data is sent to OffernitX servers</li>
-                        </ul>
-                        This is the highest privacy option.
-                    </div>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">Can OffernitX access our customer emails or quotations?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        <strong>No.</strong>
-                        In self-hosted mode: We do not see your emails, quotations, PDFs, or access your database. We
-                        provide the software only; you operate it fully internally.
-                    </div>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">What data does OffernitX store?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        <strong>Only what is required to create and track quotations.</strong>
-                        <ul>
-                            <li>Quotation-related emails & Generated PDFs</li>
-                            <li>Extracted products, quantities, prices, and VAT</li>
-                            <li>Date and time of quotation</li>
-                        </ul>
-                        We do NOT store full mailbox history, internal discussions, or credentials in plain text.
-                    </div>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">Are emails sent automatically to customers?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        <strong>No.</strong>
-                        OffernitX creates email drafts only. A human must always review and click Send. There is no
-                        automatic sending during trials or MVP usage.
-                    </div>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">Is our data used to train AI models?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        <strong>Absolutely not.</strong>
-                        We do not train AI on client data, reuse emails for analytics, or share data between customers.
-                        Each customer’s data is fully isolated.
-                    </div>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">Can we run OffernitX entirely on our own server?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        <strong>Yes.</strong>
-                        OffernitX supports self-hosted deployment where the app and database belong to you, and emails
-                        stay inside your network. This works offline and is ideal for strict compliance.
-                    </div>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">How is licensing handled without accessing our data?</button>
-                <div class="faq-answer">
-                    <div class="faq-content-inner">
-                        Licensing is handled via a secure license key or file using server fingerprints. It does NOT
-                        read email content or customer data and works offline.
-                    </div>
-                </div>
-            </div>
-
+          </div>
         </div>
-      
+
+        <div class="faq-item">
+          <button class="faq-question">Are our emails sent to OffernitX servers?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              <strong>Not in self-hosted (on-premise) mode.</strong>
+              When OffernitX is deployed on your own server:
+              <ul>
+                <li>Emails are read and processed inside your infrastructure</li>
+                <li>Email content never leaves your network</li>
+                <li>No email data is sent to OffernitX servers</li>
+              </ul>
+              This is the highest privacy option.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">Can OffernitX access our customer emails or quotations?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              <strong>No.</strong>
+              In self-hosted mode: We do not see your emails, quotations, PDFs, or access your database. We
+              provide the software only; you operate it fully internally.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">What data does OffernitX store?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              <strong>Only what is required to create and track quotations.</strong>
+              <ul>
+                <li>Quotation-related emails & Generated PDFs</li>
+                <li>Extracted products, quantities, prices, and VAT</li>
+                <li>Date and time of quotation</li>
+              </ul>
+              We do NOT store full mailbox history, internal discussions, or credentials in plain text.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">Are emails sent automatically to customers?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              <strong>No.</strong>
+              OffernitX creates email drafts only. A human must always review and click Send. There is no
+              automatic sending during trials or MVP usage.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">Is our data used to train AI models?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              <strong>Absolutely not.</strong>
+              We do not train AI on client data, reuse emails for analytics, or share data between customers.
+              Each customer’s data is fully isolated.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">Can we run OffernitX entirely on our own server?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              <strong>Yes.</strong>
+              OffernitX supports self-hosted deployment where the app and database belong to you, and emails
+              stay inside your network. This works offline and is ideal for strict compliance.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">How is licensing handled without accessing our data?</button>
+          <div class="faq-answer">
+            <div class="faq-content-inner">
+              Licensing is handled via a secure license key or file using server fingerprints. It does NOT
+              read email content or customer data and works offline.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
       <!-- <div class="grid">
         <div class="tile mid">
           <h3 data-i18n="faq.q1">Does OffernitX send emails automatically?</h3>
@@ -2129,11 +2127,13 @@
   <section class="section alt" id="demo">
     <div class="wrap">
       <h2 class="h2" data-i18n="demo.h2">90-second demo</h2>
-      <p class="sub" data-i18n="demo.sub">Replace this placeholder with your real video. The layout is production-ready.
-      </p>
+      <!-- <p class="sub" data-i18n="demo.sub">Replace this placeholder with your real video. The layout is production-ready.
+      </p> -->
       <div class="demoBox">
-        <div aria-label="Demo video placeholder" class="video">
-          <button class="play" onclick="alert('Replace this placeholder with your video embed.');"
+        <div aria-label="Demo video placeholder" class="video" id="videoContainer">
+          <!-- <button class="play" onclick="alert('Replace this placeholder with your video embed.');"
+            type="button">▶</button> -->
+            <button class="play" id="playBtn"
             type="button">▶</button>
         </div>
         <div class="videoMeta" data-i18n="demo.meta">Tip: use a simple screen recording: email → extracted items → ERP
@@ -2663,26 +2663,45 @@
   </script>
 
 
- <script>
-        document.querySelectorAll('.faq-question').forEach(button => {
-            button.addEventListener('click', () => {
-                const faqItem = button.parentElement;
-                const answer = button.nextElementSibling;
-                document.querySelectorAll('.faq-item').forEach(item => {
-                    if (item !== faqItem) {
-                        item.classList.remove('active');
-                        item.querySelector('.faq-answer').style.maxHeight = null;
-                    }
-                });
-                faqItem.classList.toggle('active');
-                if (faqItem.classList.contains('active')) {
-                    answer.style.maxHeight = answer.scrollHeight + "px";
-                } else {
-                    answer.style.maxHeight = null;
-                }
-            });
+  <script>
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const faqItem = button.parentElement;
+        const answer = button.nextElementSibling;
+        document.querySelectorAll('.faq-item').forEach(item => {
+          if (item !== faqItem) {
+            item.classList.remove('active');
+            item.querySelector('.faq-answer').style.maxHeight = null;
+          }
         });
-    </script>
+        faqItem.classList.toggle('active');
+        if (faqItem.classList.contains('active')) {
+          answer.style.maxHeight = answer.scrollHeight + "px";
+        } else {
+          answer.style.maxHeight = null;
+        }
+      });
+    });
+  </script>
+
+  <!-- Video Script -->
+
+  <script>
+document.getElementById("playBtn").addEventListener("click", function () {
+
+  const videoContainer = document.getElementById("videoContainer");
+
+  videoContainer.innerHTML = `
+    <iframe width="100%" height="100%"
+      src="https://www.youtube.com/embed/5UMI3ZHNtaU?autoplay=1"
+      title="YouTube video player"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  `;
+});
+</script>
 </body>
 
 </html>
